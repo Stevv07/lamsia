@@ -1,155 +1,79 @@
 import { useState } from "react";
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+// const styles = `
+//   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+//   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --teal: #4DD9C0;
-    --teal-light: #E8FAF7;
-    --teal-mid: #B2EEE6;
-    --orange-light: #FFF0E6;
-    --orange: #F5A623;
-    --bg: #EEF7F9;
-    --white: #FFFFFF;
-    --text-dark: #1A2533;
-    --text-mid: #4A5568;
-    --text-soft: #8899AA;
-    --border: #E2EDF2;
-    --taken-bg: #D0F5EE;
-    --taken-text: #1A9E83;
-    --shadow: 0 2px 12px rgba(30,80,100,0.07);
-    --shadow-md: 0 4px 24px rgba(30,80,100,0.11);
-  }
+//   :root {
+//     --teal: #4DD9C0;
+//     --teal-light: #E8FAF7;
+//     --teal-mid: #B2EEE6;
+//     --orange-light: #FFF0E6;
+//     --orange: #F5A623;
+//     --bg: #EEF7F9;
+//     --white: #FFFFFF;
+//     --text-dark: #1A2533;
+//     --text-mid: #4A5568;
+//     --text-soft: #8899AA;
+//     --border: #E2EDF2;
+//     --taken-bg: #D0F5EE;
+//     --taken-text: #1A9E83;
+//     --shadow: 0 2px 12px rgba(30,80,100,0.07);
+//     --shadow-md: 0 4px 24px rgba(30,80,100,0.11);
+//   }
 
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); }
+//   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); }
 
-  .app { display: flex; min-height: 100vh; }
+//   /* Sidebar */
+//   .sidebar {
+//     width: 220px; min-height: 100vh; background: var(--white);
+//     display: flex; flex-direction: column; padding: 28px 0 24px;
+//     box-shadow: 2px 0 12px rgba(30,80,100,0.05);
+//     position: fixed; top: 0; left: 0; bottom: 0;
+//   }
+//   .nav-item:hover { background: var(--teal-light); color: var(--teal); }
+//   .nav-item.active { background: var(--teal); color: white; font-weight: 600; }
+//   .nav-item .icon { width: 20px; text-align: center; font-size: 16px; }
 
-  /* Sidebar */
-  .sidebar {
-    width: 220px; min-height: 100vh; background: var(--white);
-    display: flex; flex-direction: column; padding: 28px 0 24px;
-    box-shadow: 2px 0 12px rgba(30,80,100,0.05);
-    position: fixed; top: 0; left: 0; bottom: 0;
-  }
+//   .device-status-row:last-child { margin-bottom: 0; }
+//   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
 
-  .brand { display: flex; align-items: center; gap: 12px; padding: 0 24px 32px; }
-  .brand-avatar {
-    width: 42px; height: 42px; border-radius: 50%;
-    background: var(--bg); border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; color: var(--teal);
-  }
-  .brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; line-height: 1.1; }
-  .brand-sub { font-size: 11px; color: var(--text-soft); font-weight: 400; margin-top: 2px; }
 
-  .nav { flex: 1; padding: 0 12px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 11px 16px; border-radius: 12px;
-    cursor: pointer; font-size: 15px; font-weight: 500;
-    color: var(--text-mid); margin-bottom: 4px;
-    transition: all 0.18s ease;
-  }
-  .nav-item:hover { background: var(--teal-light); color: var(--teal); }
-  .nav-item.active { background: var(--teal); color: white; font-weight: 600; }
-  .nav-item .icon { width: 20px; text-align: center; font-size: 16px; }
+//   /* Stat Cards */
+//   .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+//   .stat-icon.teal { background: var(--teal-light); color: var(--teal); }
 
-  .device-status {
-    margin: 0 12px; background: var(--teal-light); border-radius: 14px;
-    padding: 14px 16px;
-  }
-  .device-status-title { font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
-  .device-status-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-mid); margin-bottom: 5px; }
-  .device-status-row:last-child { margin-bottom: 0; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+//   /* Bottom Grid */
 
-  /* Main */
-  .main { margin-left: 220px; flex: 1; padding: 36px 36px 36px; }
+//   /* Schedule Card */
+//   .card-header-icon.orange { background: var(--orange-light); color: var(--orange); }
 
-  .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 32px; color: var(--text-dark); }
-  .page-subtitle { font-size: 15px; color: var(--text-soft); margin-top: 6px; margin-bottom: 28px; }
+//   
+//   .schedule-row:last-child { border-bottom: none; }
+//   .badge.taken { background: var(--taken-bg); color: var(--taken-text); }
+//   .badge.pending { background: var(--orange-light); color: var(--orange); }
+//   .badge .check { font-size: 13px; }
 
-  /* Stat Cards */
-  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-  .stat-card {
-    background: var(--white); border-radius: 18px; padding: 22px 22px 20px;
-    box-shadow: var(--shadow); transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .stat-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; margin-bottom: 14px;
-  }
-  .stat-icon.green { background: var(--teal-light); color: var(--teal); }
-  .stat-icon.orange { background: var(--orange-light); color: var(--orange); }
-  .stat-icon.blue { background: #EBF3FF; color: #4A90D9; }
-  .stat-icon.teal { background: var(--teal-light); color: var(--teal); }
-  .stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 28px; color: var(--text-dark); }
-  .stat-label { font-size: 13px; color: var(--text-soft); margin-top: 4px; }
+//   /* Alerts Card */
+//   .alert-item:last-child { border-bottom: none; }
+//   .alert-icon.check { color: var(--teal); }
+//   .alert-icon.battery { color: #4A90D9; }
 
-  /* Bottom Grid */
-  .bottom-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
-
-  /* Schedule Card */
-  .schedule-card {
-    background: var(--white); border-radius: 18px; padding: 24px;
-    box-shadow: var(--shadow);
-  }
-  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-  .card-header-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    background: var(--teal-light); color: var(--teal);
-    display: flex; align-items: center; justify-content: center; font-size: 17px;
-  }
-  .card-header-icon.orange { background: var(--orange-light); color: var(--orange); }
-  .card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 17px; }
-
-  .schedule-row {
-    display: flex; align-items: center; padding: 13px 0;
-    border-bottom: 1px solid var(--border); gap: 16px;
-  }
-  .schedule-row:last-child { border-bottom: none; }
-  .sched-time { font-size: 14px; color: var(--text-soft); width: 80px; font-weight: 500; }
-  .sched-name { flex: 1; font-size: 15px; font-weight: 500; color: var(--text-dark); }
-  .badge {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
-  }
-  .badge.taken { background: var(--taken-bg); color: var(--taken-text); }
-  .badge.pending { background: var(--orange-light); color: var(--orange); }
-  .badge .check { font-size: 13px; }
-
-  /* Alerts Card */
-  .alerts-card {
-    background: var(--white); border-radius: 18px; padding: 24px;
-    box-shadow: var(--shadow);
-  }
-  .alert-item { padding: 13px 0; border-bottom: 1px solid var(--border); }
-  .alert-item:last-child { border-bottom: none; }
-  .alert-row { display: flex; align-items: flex-start; gap: 10px; }
-  .alert-icon { font-size: 16px; margin-top: 1px; color: var(--orange); flex-shrink: 0; }
-  .alert-icon.check { color: var(--teal); }
-  .alert-icon.battery { color: #4A90D9; }
-  .alert-text { font-size: 14px; color: var(--text-dark); font-weight: 500; line-height: 1.4; }
-  .alert-time { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
-
-  @media (max-width: 1100px) {
-    .stat-grid { grid-template-columns: repeat(2, 1fr); }
-    .bottom-grid { grid-template-columns: 1fr; }
-  }
-`;
+//   @media (max-width: 1100px) {
+//     .stat-grid { grid-template-columns: repeat(2, 1fr); }
+//     .bottom-grid { grid-template-columns: 1fr; }
+//   }
+// `;
 
 import {
+  SidebarProvider,
   Sidebar,
   SidebarHeader,
   SidebarContent,
+  SidebarGroup,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { SidebarGroup } from "./components/ui/sidebar";
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: "⊞" },
@@ -192,131 +116,142 @@ export default function LamsiaDashboard() {
 
   return (
     <>
-      <style>{styles}</style>
-      <div className="app">
+      {/* <style>{styles}</style> */}
+      <div className="flex min-h-screen bg-[#EEF7F9] font-sans">
         {/* Sidebar */}
-        {/* <Sidebar />
-          <SidebarHeader/>
-          <SidebarContent>
-            <SidebarGroup>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter/> */}
-          <aside className="sidebar">
-            <div className="brand">
-              <div className="brand-avatar">💊</div>
-              <div>
-                <div className="brand-name">LAMSIA</div>
-                <div className="brand-sub">Smart Medicine Box</div>
-              </div>
-            </div>
-
-            <nav className="nav">
-              {navItems.map((item) => (
-                <div
-                  key={item.id}
-                  className={`nav-item${activeNav === item.id ? " active" : ""}`}
-                  onClick={() => setActiveNav(item.id)}
-                >
-                  <span className="icon">{item.icon}</span>
-                  {item.label}
+        <SidebarProvider>
+          <Sidebar>
+            <SidebarHeader>
+              <div className="flex items-center gap-3 px-6 pb-8">
+                <div className="w-10 h-10 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-lg text-gray-600">
+                  💊
                 </div>
-              ))}
-            </nav>
-
-            <div className="device-status">
-              <div className="device-status-title">Device Status</div>
-              <div className="device-status-row">
-                <span>📶</span> Terkoneksi
-              </div>
-              <div className="device-status-row">
-                <span>🔋</span> 85% Battery
-              </div>
-            </div>
-          </aside>
-        {/* <Sidebar /> */}
-
-        {/* Main Content */}
-        <main className="main">
-          <div className="page-title">Dashboard</div>
-          <div className="page-subtitle">
-            Selamat datang kembali! Berikut adalah tinjauan obat Anda
-          </div>
-
-          {/* Stat Cards */}
-          <div className="stat-grid">
-            <div className="stat-card">
-              <div className="stat-icon green">✓</div>
-              <div className="stat-value">3/4</div>
-              <div className="stat-label">Obat yang diambil hari ini</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon orange">⚠</div>
-              <div className="stat-value">2</div>
-              <div className="stat-label">Obat terlewat minggu ini</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon blue">🕐</div>
-              <div className="stat-value">2 Jam</div>
-              <div className="stat-label">Obat Selanjutnya</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon teal">📈</div>
-              <div className="stat-value">92%</div>
-              <div className="stat-label">Rasio Kepatuhan</div>
-            </div>
-          </div>
-
-          {/* Bottom Grid */}
-          <div className="bottom-grid">
-            {/* Schedule */}
-            <div className="schedule-card">
-              <div className="card-header">
-                <div className="card-header-icon">🔗</div>
-                <div className="card-title">Jadwal hari ini</div>
-              </div>
-              {scheduleData.map((item, i) => (
-                <div className="schedule-row" key={i}>
-                  <div className="sched-time">{item.time}</div>
-                  <div className="sched-name">{item.name}</div>
-                  <div className={`badge ${item.status}`}>
-                    <span className="check">✓</span>
-                    {item.status === "taken" ? "Taken" : "Pending"}
-                  </div>
+                <div>
+                  {/* brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; line-height: 1.1; } */}
+                  <div className="brand-name">LAMSIA</div>
+                  {/* brand-sub { color: var(--text-soft); */}
+                  <div className="text-xs font-normal mt-2">Smart Medicine Box</div>
                 </div>
-              ))}
-            </div>
-
-            {/* Alerts */}
-            <div className="alerts-card">
-              <div className="card-header">
-                <div className="card-header-icon orange">🔔</div>
-                <div className="card-title">Peringatan Terbaru</div>
               </div>
-              {alerts.map((alert, i) => (
-                <div className="alert-item" key={i}>
-                  <div className="alert-row">
-                    <span
-                      className={`alert-icon ${
-                        alert.type === "check"
-                          ? "check"
-                          : alert.type === "battery"
-                          ? "battery"
-                          : ""
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarGroup>
+                <nav className="flex-1 px-3 space-y-1">
+                  {navItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-sm font-medium transition-all ${
+                        activeNav === item.id
+                          ? "bg-[#4DD9C0] text-white"
+                          : "text-gray-500 hover:bg-[#E8FAF7] hover:text-[#4DD9C0]"
                       }`}
+                      onClick={() => setActiveNav(item.id)}
                     >
-                      {alert.icon}
-                    </span>
-                    <div>
-                      <div className="alert-text">{alert.text}</div>
-                      <div className="alert-time">{alert.time}</div>
+                      <span className="text-xl">{item.icon}</span>
+                      {item.label}
+                    </div>
+                  ))}
+                </nav>
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+              <div className="mx-4 mb-4 rounded-xl p-4 bg-[#E8FAF7]">
+                <div className="text-xs font-semibold mb-3 text-gray-700">Device Status</div>
+                <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                  <span>📶</span> Terkoneksi
+                </div>
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <span>🔋</span> 85% Battery
+                </div>
+              </div>
+            </SidebarFooter>
+          </Sidebar>
+        
+
+          {/* Main Content */}
+          <main className="flex-1 p-8 lg:p-10 max-h-screen overflow-y-auto">
+            <div className="font-bold text-3xl text-gray-900 tracking-tight">Dashboard</div>
+            <div className="text-sm text-gray-500 mt-2 mb-8">
+              Selamat datang kembali! Berikut adalah tinjauan obat Anda
+            </div>
+
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              <div className="rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition">
+                <div className="flex w-12 h-12 rounded-xl items-center justify-center text-xl mb-4 bg-[#E8FAF7] text-[#4DD9C0]">✓</div>
+                <div className="font-bold text-2xl text-gray-900">3/4</div>
+                <div className="text-xs text-gray-500 mt-1">Obat yang diambil hari ini</div>
+              </div>
+              <div className="rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition">
+                <div className="flex w-12 h-12 rounded-xl items-center justify-center text-xl mb-4 bg-[#FFF0E6] text-[#F5A623]">⚠</div>
+                <div className="font-bold text-2xl text-gray-900">2</div>
+                <div className="text-xs text-gray-500 mt-1">Obat terlewat minggu ini</div>
+              </div>
+              <div className="rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition">
+                <div className="flex w-12 h-12 rounded-xl items-center justify-center text-xl mb-4 bg-blue-50 text-blue-500">🕐</div>
+                <div className="font-bold text-2xl text-gray-900">2 Jam</div>
+                <div className="text-xs text-gray-500 mt-1">Obat Selanjutnya</div>
+              </div>
+              <div className="rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition">
+                <div className="flex w-12 h-12 rounded-xl items-center justify-center text-xl mb-4 bg-[#E8FAF7] text-[#4DD9C0]">📈</div>
+                <div className="font-bold text-2xl text-gray-900">92%</div>
+                <div className="text-xs text-gray-500 mt-1">Rasio Kepatuhan</div>
+              </div>
+            </div>
+
+            {/* Bottom Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
+              {/* Schedule */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="flex w-10 h-10 items-center justify-center bg-[#E8FAF7] text-[#4DD9C0] rounded-xl text-lg">🔗</div>
+                  <div className="font-bold text-lg text-gray-900">Jadwal hari ini</div>
+                </div>
+                {scheduleData.map((item, i) => (
+                  <div className={`flex flex-wrap items-center py-3.5 gap-4 ${i !== scheduleData.length - 1 ? "border-b border-gray-100" : ""}`} key={i}>
+                    <div className="text-sm text-gray-500 w-24 font-medium">{item.time}</div>
+                    <div className="flex-1 text-sm font-semibold text-gray-900">{item.name}</div>
+                    <div className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-semibold ${item.status === 'taken' ? "bg-[#D0F5EE] text-[#1A9E83]" : "bg-[#FFF0E6] text-[#F5A623]"}`}>
+                      <span className="text-sm">✓</span>
+                      {item.status === "taken" ? "Taken" : "Pending"}
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Alerts */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="flex w-10 h-10 items-center justify-center bg-[#FFF0E6] text-[#F5A623] rounded-xl text-lg">🔔</div>
+                  <div className="font-bold text-lg text-gray-900">Peringatan Terbaru</div>
                 </div>
-              ))}
+                <div className="flex flex-col gap-3">
+                  {alerts.map((alert, i) => (
+                    <div className="p-4 bg-gray-50 rounded-xl" key={i}>
+                      <div className="flex items-start gap-3">
+                        <span
+                          className={`text-lg mt-0.5 ${
+                            alert.type === "check"
+                              ? "text-[#4DD9C0]"
+                              : alert.type === "battery"
+                              ? "text-blue-500"
+                              : "text-[#F5A623]"
+                          }`}
+                        >
+                          {alert.icon}
+                        </span>
+                        <div>
+                          <div className="text-sm text-gray-900 font-medium leading-snug">{alert.text}</div>
+                          <div className="text-xs text-gray-500 mt-1.5">{alert.time}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </SidebarProvider>
       </div>
     </>
   );
