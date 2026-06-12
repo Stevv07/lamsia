@@ -2,11 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
-// import LamsiaDashboard from '@/LamsiaDashboard.jsx'
 import AppLayout from '@/components/app-layout.jsx'
-import { KartuStatistik } from '@/components/KartuStatistik.jsx'
 import { JadwalObat } from '@/jadwalObat.jsx'
 import { BerandaDashboard } from './LamsiaDashboard'
+import { DaftarObat } from '@/daftarObat.jsx'
 
 const router = createBrowserRouter([
   {
@@ -21,6 +20,10 @@ const router = createBrowserRouter([
         path: "jadwal",
         element: <JadwalObat/>
       },
+      {
+        path: "obat",
+        element: <DaftarObat/>
+      }
     ]
   }
 ]);

@@ -22,8 +22,8 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-3 px-6 pb-8">
-          <div className="w-10 h-10 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-lg text-gray-600">
+        <div className="flex items-center gap-3 px-6 py-8">
+          <div className="size-10 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-lg text-gray-600">
             💊
           </div>
           <div>

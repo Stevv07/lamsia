@@ -1,4 +1,5 @@
 import { JadwalHari } from '@/components/jadwalHari.jsx'
+import { PageHeader } from '@/components/pageHeader.jsx'
 
 const weekDays = [
   {day: "Mon", count: "2/5", active: true},
@@ -13,22 +14,11 @@ const weekDays = [
 export function JadwalObat() {
   return (
     <div className="flex flex-col gap-6">
-      {/* Blok 1: Header & Tombol Tambah */}
-      <div className="flex justify-between items-end">
-        <div>
-          <div className="font-bold text-3xl text-gray-900 tracking-tight">Jadwal Obat</div>
-          <div className="text-sm text-gray-500 mt-2 mb-8">
-            Kelola dan Lihat Jadwal Obat
-          </div>
-        </div>
-
-        {/* Tombol Tambah */}
-        <button className="flex items-center gap-2 bg-[#2DCDDF] hover:bg-[#25B4C4] text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-colors shadow-sm">
-          <span className="text-lg">+
-            Tambah Obat
-          </span>
-        </button>
-      </div>
+      {/* Blok 1: Header */}
+      <PageHeader
+        title="Jadwal Obat"
+        subtitle="Kelola dan Lihat Jadwal Obat"
+      />
 
       {/* Blok 2: Tab Mingguan/Harian */}
       <div>
