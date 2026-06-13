@@ -5,7 +5,7 @@ import './index.css'
 import AppLayout from '@/components/app-layout.jsx'
 import { JadwalObat } from '@/jadwalObat.jsx'
 import { BerandaDashboard } from './LamsiaDashboard'
-import { DaftarObat } from '@/daftarObat.jsx'
+import { ScheduleObat } from '@/daftarObat.jsx'
 
 const router = createBrowserRouter([
   {
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       },
       {
         path: "obat",
-        element: <DaftarObat/>
+        element: <ScheduleObat/>
       }
     ]
   }

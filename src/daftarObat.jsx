@@ -13,21 +13,268 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Card } from '@/components/ui/card.jsx';
+import {
+  CalendarDays,
+  ChevronUp,
+  ChevronDown,
+  Clock,
+  Info,
+  LayoutList,
+  LayoutGrid,
+  Pill,
+  Plus,
+  RefreshCw,
+  Trash2,
+  Search
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge.jsx';
+import { Input } from '@/components/ui/input.jsx';
 
-export function DaftarObat() {
+const initialMeds = [
+  {
+    id: '1',
+    name: 'Paracetamol',
+    dosage: '100mg',
+    form: 'Tablet',
+    times: ['08.00 AM'],
+    repeat: 'Every day',
+    startDate: '2024-06-01',
+    duration: 'Ongoing',
+    color: "bg-red-100 text-red-700",
+  }
+]
+
+function DetailRow({ icon, label, value }) {
+  return (
+    <div className="flex items-start gap-2">
+      <span className="mt-0 5 shrink-0">{icon}</span>
+      <span className="text-slate-500 min-w-80">{label}</span>
+      <span className="text-slate-700 font-medium">{value}</span>
+    </div>
+  )
+}
+
+function DaftarObatBaris({ med, onDelete }) {
+  const [expanded, setExpanded] = useState(false);
+  
+  return (
+    <Card className="border-slate-200 overflow-hidden">
+      <div className="flex items-center gap-4 p-5">
+        <div className={`flex shrink-0 items-center justify-center size-12 rounded-full ${med.color.split(" ")[0]}`}>
+          <Pill className={`size-6 ${med.color.split(" ")[1]}`}/>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <h3 className="font-bold text-slate-800 text-lg leading-tight">
+              {med.name}
+            </h3>
+            <Badge className={`text-xs ${med.color}`}>{med.form}</Badge>
+            <Badge variant='outline' className="text-xs text-slate-500">{med.dosage}</Badge>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+            <span className="flex items-center gap-1">
+              <Clock className="size-5"/>
+              {med.times.join(", ")}
+            </span>
+            <span className="flex items-center gap-1">
+              <RefreshCw className="size-5"/>
+              {med.repeat}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => setExpanded((v) => !v)} className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1 5 rounded-lg hover:bg-blue-50 transition-colors">
+            {expanded ? <ChevronUp className="size-4"/> : <ChevronDown className="size-4"/>}
+            {expanded ? "Less" : "Details"}
+          </button>
+          <button onClick={() => onDelete(med.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Remove medication">
+            <Trash2 className="size-4"/>
+          </button>
+        </div>
+      </div>
+
+      {/* Expanded Details Panel */}
+      {expanded && (
+        <div className="border-t border-slate-100 bg-slate-50 px-5 py-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+          <div className="space-y-3">
+            <DetailRow icon={<CalendarDays className="size-4 text-slate-400"/>} label="Start date" value={med.startDate || "-"}/>
+            <DetailRow icon={<Clock className="size-4 text-slate-400"/>} label="Duration" value={med.duration || "-"}/>
+            <DetailRow icon={<RefreshCw className="size-4 text-slate-400"/>} label="Repeat" value={med.repeat || "-"}/>
+          </div>
+        </div>
+      )}
+    </Card>
+  )
+}
+
+function DaftarObatKolom() {
+  const [flipped, setFlipped] = useState(false);
+
+  return (
+    <div className="relative h-72" style={{ perspective: '1000px'}}>
+      <div
+        className="size-full transition-transform duration-500"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        }}
+      >
+        <div className="flex flex-col absolute inset-0 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden" style={{ backfaceVisibility: 'hidden'}}>
+          <div className={`h-2 w-full ${initialMeds[0].color.split(" ")[0]}`} />
+
+          <div className="flex flex-1 flex-col p-5 gap-3">
+            <div className="flex items-start gap-3">
+              <div className={`flex shrink-0 size-11 rounded-full items-center justify-center ${initialMeds[0].color.split(" ")[0]}`}>
+                <Pill className={`size-5 ${initialMeds[0].color.split(" ")[1]}`}/>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-slate-400 italic truncate">
+                  {initialMeds[0].name}
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-1 5">
+              <Badge className={`text-xs ${initialMeds[0].color.split(" ")[0]}`}>
+                {initialMeds[0].form}
+              </Badge>
+              <Badge variant='outline' className={"text-xs text-slate-500"}>
+                {initialMeds[0].dosage}
+              </Badge>
+            </div>
+
+            <div className="space-y-1.5 text-sm text-slate-600">
+              <div className="flex items-center gap-2">
+                <Clock className="size-3.5 text-slate-400 shrink-0"/>
+                <span className="truncate">{initialMeds[0].times.join(", ")}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <RefreshCw className="size-3.5 text-slate-400 shrink-0"/>
+                <span className="truncate">{initialMeds[0].repeat}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CalendarDays className="size-3.5 text-slate-400 shrink-0"/>
+                <span className="truncate">{initialMeds[0].startDate}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex border-t border-slate-100">
+            <button
+              onClick={() => setFlipped(true)}
+              className="flex flex-1 items-center justify-center py-2 5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors gap-1">
+              <Info className="size-3.5"/> Full details
+            </button>
+            <div className="w-px bg-slate-100"></div>
+            <button
+              onClick={() => onDelete(initialMeds[0].id)}
+              className="flex flex-1 items-center justify-center py-2 5 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors gap-1">
+              <Trash2 className="size-3.5"/> Hapus
+            </button>
+          </div>
+        </div>
+
+        <div
+          className="flex flex-col absolute inset-0 rounded-2xl border border-slate-200 bg-slate-50 shadow-sm overflow-hidden"
+          style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+        >
+          <div className={`h2 w-full ${initialMeds[0].color.split(" ")[0]}`}></div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 text-sm">
+            <p className="font-bold text-slate-800 text-base">{initialMeds[0].name}</p>
+            {initialMeds[0].dosage && <DetailRow label="Dosis" value={initialMeds[0].dosage}/>}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function ScheduleObat() {
+  const [meds, setMeds] = useState(initialMeds);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState("row");
+  const [showModal, setShowModal] = useState(false);
+  // const [form, setForm] = useState(emptyForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const filtered = meds.filter(
+    (m) =>
+      m.name.toLowerCase().includes(search.toLowerCase())
+  )
+
+  function handleDelete(id) {
+    setMeds((prev) => prev.filter((m) => m.id !== id));
+  }
 
   return (
     <>
+      {/* Header */}
       <PageHeader
         title="Daftar Obat"
         subtitle="Kelola dan lihat daftar obat Anda"
       >
         {/* Tombol Tambah */}
         <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 rounded-lg bg-[#2DCDDF] hover:bg-[#25B4C4] text-white px-5 py-2.5">
-          <span className="text-lg">+</span> Tambah Obat
+          <Plus className="size-4 mr-2" />
+          Tambah Obat
         </button>
       </PageHeader>
+
+      {/* Search and View Icon */}
+      <div className="flex items-center gap-3 mb-2">
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate"/>
+          <Input
+            placeholder="Cari Obat"
+            className="pl-9"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-1">
+          <button
+            onClick={() => setView("row")}
+            title="Row view"
+            className={`p-2 rouded-md transition-colors ${view === "row" ? "bg-white shadow text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+          >
+            <LayoutList className="size-4" />
+          </button>
+          <button
+            onClick={() => setView("card")}
+            title="Card view"
+            className={`p-2 rounded-md transition-colors ${view === "card" ? "bg-white shadow text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+          >
+            <LayoutGrid className="size-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Daftar Obat */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-16 text-slate-400">
+          <Pill className="size-12 mx-auto mb-3 opacity-30"/>
+          <p className="text-lg font-medium">Tidak ada obat yang ditemukan</p>
+          <p className="text-sm">Coba cari berdasarkan kata kunci yang lain</p>
+        </div>
+      ) : view === "row" ? (
+        <div className="space-y-4">
+          {filtered.map((m) => (
+            <DaftarObatBaris key={m.id} med={m} onDelete={handleDelete}/>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {filtered.map((m) => (
+            <DaftarObatKolom />
+          ))}
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
