@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import {
   Sidebar,
@@ -7,6 +6,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarFooter,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 const navItems = [
@@ -16,8 +16,18 @@ const navItems = [
   { path: "/riwayat", label: "Riwayat", icon: "🕐" },
 ];
 
+function isNavActive(pathname, path) {
+  if (path === "/") return pathname === "/";
+  return pathname.startsWith(path);
+}
+
 export function AppSidebar() {
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const { pathname } = useLocation();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const closeMobileSidebar = () => {
+    if (isMobile) setOpenMobile(false);
+  };
 
   return (
     <Sidebar>
@@ -41,12 +51,12 @@ export function AppSidebar() {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={closeMobileSidebar}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-sm font-medium transition-all ${
-                  activeNav === item.path
+                  isNavActive(pathname, item.path)
                     ? "bg-[#4DD9C0] text-white"
                     : "text-gray-500 hover:bg-[#E8FAF7] hover:text-[#4DD9C0]"
                 }`}
-                // onClick={() => setActiveNav(item.id)}
               >
                 <span className="text-xl">{item.icon}</span>
                 {item.label}

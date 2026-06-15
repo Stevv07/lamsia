@@ -15,7 +15,9 @@ import {
 } from "@/components/ui/select"
 import { Card } from '@/components/ui/card.jsx';
 import {
+  AlertTriangle,
   CalendarDays,
+  ChevronLeft,
   ChevronUp,
   ChevronDown,
   Clock,
@@ -41,16 +43,79 @@ const initialMeds = [
     repeat: 'Every day',
     startDate: '2024-06-01',
     duration: 'Ongoing',
+    prescribedBy: 'Dr. Ahmad',
+    sideEffects: 'Mual ringan, pusing',
+    color: "bg-red-100 text-red-700",
+  },
+  {
+    id: '2',
+    name: 'Paracetamol',
+    dosage: '100mg',
+    form: 'Tablet',
+    times: ['08.00 AM'],
+    repeat: 'Every day',
+    startDate: '2024-06-01',
+    duration: 'Ongoing',
+    prescribedBy: 'Dr. Ahmad',
+    sideEffects: 'Mual ringan, pusing',
+    color: "bg-red-100 text-red-700",
+  },
+  {
+    id: '3',
+    name: 'Paracetamol',
+    dosage: '100mg',
+    form: 'Tablet',
+    times: ['08.00 AM'],
+    repeat: 'Every day',
+    startDate: '2024-06-01',
+    duration: 'Ongoing',
+    prescribedBy: 'Dr. Ahmad',
+    sideEffects: 'Mual ringan, pusing',
+    color: "bg-red-100 text-red-700",
+  },
+  {
+    id: '4',
+    name: 'Paracetamol',
+    dosage: '100mg',
+    form: 'Tablet',
+    times: ['08.00 AM'],
+    repeat: 'Every day',
+    startDate: '2024-06-01',
+    duration: 'Ongoing',
+    prescribedBy: 'Dr. Ahmad',
+    sideEffects: 'Mual ringan, pusing',
+    color: "bg-red-100 text-red-700",
+  },
+  {
+    id: '5',
+    name: 'Paracetamol',
+    dosage: '100mg',
+    form: 'Tablet',
+    times: ['08.00 AM'],
+    repeat: 'Every day',
+    startDate: '2024-06-01',
+    duration: 'Ongoing',
+    prescribedBy: 'Dr. Ahmad',
+    sideEffects: 'Mual ringan, pusing',
     color: "bg-red-100 text-red-700",
   }
 ]
 
 function DetailRow({ icon, label, value }) {
   return (
-    <div className="flex items-start gap-2">
-      <span className="mt-0 5 shrink-0">{icon}</span>
-      <span className="text-slate-500 min-w-80">{label}</span>
+    <div className="flex items-center gap-2">
+      <span className="mt-0.5 shrink-0">{icon}</span>
+      <span className="text-slate-500 min-w-40 md:min-w-60">{label}</span>
       <span className="text-slate-700 font-medium">{value}</span>
+    </div>
+  )
+}
+
+function DetailField({ label, value }) {
+  return (
+    <div>
+      <p className="text-xs text-slate-400">{label}</p>
+      <p className="text-sm font-medium text-slate-700 mt-0.5">{value}</p>
     </div>
   )
 }
@@ -97,7 +162,7 @@ function DaftarObatBaris({ med, onDelete }) {
 
       {/* Expanded Details Panel */}
       {expanded && (
-        <div className="border-t border-slate-100 bg-slate-50 px-5 py-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+        <div className="relative border-slate-100 bg-slate-50 px-2 py-2 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
           <div className="space-y-3">
             <DetailRow icon={<CalendarDays className="size-4 text-slate-400"/>} label="Start date" value={med.startDate || "-"}/>
             <DetailRow icon={<Clock className="size-4 text-slate-400"/>} label="Duration" value={med.duration || "-"}/>
@@ -109,96 +174,119 @@ function DaftarObatBaris({ med, onDelete }) {
   )
 }
 
-function DaftarObatKolom() {
-  const [flipped, setFlipped] = useState(false);
+function DaftarObatKartu({ med, onDelete }) {
+  const [showDetails, setShowDetails] = useState(false);
 
-  return (
-    <div className="relative h-72" style={{ perspective: '1000px'}}>
-      <div
-        className="size-full transition-transform duration-500"
-        style={{
-          transformStyle: 'preserve-3d',
-          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        }}
-      >
-        <div className="flex flex-col absolute inset-0 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden" style={{ backfaceVisibility: 'hidden'}}>
-          <div className={`h-2 w-full ${initialMeds[0].color.split(" ")[0]}`} />
+  if (showDetails) {
+    return (
+      <div className="flex flex-col h-72 rounded-2xl border border-slate-200 bg-slate-50 shadow-sm overflow-hidden">
+        <div className={`h-2 w-full shrink-0 ${med.color.split(" ")[0]}`} />
 
-          <div className="flex flex-1 flex-col p-5 gap-3">
-            <div className="flex items-start gap-3">
-              <div className={`flex shrink-0 size-11 rounded-full items-center justify-center ${initialMeds[0].color.split(" ")[0]}`}>
-                <Pill className={`size-5 ${initialMeds[0].color.split(" ")[1]}`}/>
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-400 italic truncate">
-                  {initialMeds[0].name}
-                </h3>
-              </div>
-            </div>
+        <div className="flex flex-1 flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+            <h3 className="font-bold text-slate-800 text-base">
+              {med.name} — Details
+            </h3>
 
-            <div className="flex flex-wrap gap-1 5">
-              <Badge className={`text-xs ${initialMeds[0].color.split(" ")[0]}`}>
-                {initialMeds[0].form}
-              </Badge>
-              <Badge variant='outline' className={"text-xs text-slate-500"}>
-                {initialMeds[0].dosage}
-              </Badge>
-            </div>
+            <DetailField label="Prescribed by" value={med.prescribedBy || "-"} />
+            <DetailField label="Start date" value={med.startDate || "-"} />
+            <DetailField label="Duration" value={med.duration || "-"} />
 
-            <div className="space-y-1.5 text-sm text-slate-600">
-              <div className="flex items-center gap-2">
-                <Clock className="size-3.5 text-slate-400 shrink-0"/>
-                <span className="truncate">{initialMeds[0].times.join(", ")}</span>
+            <div>
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
+                <span>Side effects</span>
               </div>
-              <div className="flex items-center gap-2">
-                <RefreshCw className="size-3.5 text-slate-400 shrink-0"/>
-                <span className="truncate">{initialMeds[0].repeat}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="size-3.5 text-slate-400 shrink-0"/>
-                <span className="truncate">{initialMeds[0].startDate}</span>
-              </div>
+              <p className="text-sm font-medium text-slate-700 mt-0.5">
+                {med.sideEffects || "-"}
+              </p>
             </div>
           </div>
 
-          <div className="flex border-t border-slate-100">
+          <div className="shrink-0 border-t border-slate-200 px-5 py-3">
             <button
-              onClick={() => setFlipped(true)}
-              className="flex flex-1 items-center justify-center py-2 5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors gap-1">
-              <Info className="size-3.5"/> Full details
+              type="button"
+              onClick={() => setShowDetails(false)}
+              className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              <ChevronLeft className="size-4" />
+              Back to summary
             </button>
-            <div className="w-px bg-slate-100"></div>
-            <button
-              onClick={() => onDelete(initialMeds[0].id)}
-              className="flex flex-1 items-center justify-center py-2 5 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors gap-1">
-              <Trash2 className="size-3.5"/> Hapus
-            </button>
-          </div>
-        </div>
-
-        <div
-          className="flex flex-col absolute inset-0 rounded-2xl border border-slate-200 bg-slate-50 shadow-sm overflow-hidden"
-          style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-        >
-          <div className={`h2 w-full ${initialMeds[0].color.split(" ")[0]}`}></div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 text-sm">
-            <p className="font-bold text-slate-800 text-base">{initialMeds[0].name}</p>
-            {initialMeds[0].dosage && <DetailRow label="Dosis" value={initialMeds[0].dosage}/>}
           </div>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-72 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className={`h-2 w-full shrink-0 ${med.color.split(" ")[0]}`} />
+
+      <div className="flex flex-1 flex-col p-5 gap-3 min-h-0">
+        <div className="flex items-center gap-3">
+          <div className={`flex shrink-0 size-11 rounded-full items-center justify-center ${med.color.split(" ")[0]}`}>
+            <Pill className={`size-5 ${med.color.split(" ")[1]}`} />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-bold text-slate-400 italic truncate">
+              {med.name}
+            </h3>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          <Badge className={`text-xs ${med.color.split(" ")[0]}`}>
+            {med.form}
+          </Badge>
+          <Badge variant="outline" className="text-xs text-slate-500">
+            {med.dosage}
+          </Badge>
+        </div>
+
+        <div className="space-y-1.5 text-sm text-slate-600">
+          <div className="flex items-center gap-2">
+            <Clock className="size-3.5 text-slate-400 shrink-0" />
+            <span className="truncate">{med.times.join(", ")}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <RefreshCw className="size-3.5 text-slate-400 shrink-0" />
+            <span className="truncate">{med.repeat}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CalendarDays className="size-3.5 text-slate-400 shrink-0" />
+            <span className="truncate">{med.startDate}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 border-t border-slate-100">
+        <button
+          type="button"
+          onClick={() => setShowDetails(true)}
+          className="flex flex-1 items-center justify-center py-2.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors gap-1"
+        >
+          <Info className="size-3.5" /> Full details
+        </button>
+        <div className="w-px bg-slate-100" />
+        <button
+          type="button"
+          onClick={() => onDelete(med.id)}
+          className="flex flex-1 items-center justify-center py-2.5 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors gap-1"
+        >
+          <Trash2 className="size-3.5" /> Hapus
+        </button>
+      </div>
     </div>
-  )
+  );
 }
 
-export function ScheduleObat() {
+export function DataObat() {
   const [meds, setMeds] = useState(initialMeds);
   const [search, setSearch] = useState("");
   const [view, setView] = useState("row");
-  const [showModal, setShowModal] = useState(false);
-  // const [form, setForm] = useState(emptyForm);
+  // const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
 
   const filtered = meds.filter(
     (m) =>
@@ -271,7 +359,7 @@ export function ScheduleObat() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filtered.map((m) => (
-            <DaftarObatKolom />
+            <DaftarObatKartu key={m.id} med={m} onDelete={handleDelete} />
           ))}
         </div>
       )}
