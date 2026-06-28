@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/pageHeader';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -32,74 +32,6 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.jsx';
 import { Input } from '@/components/ui/input.jsx';
-
-const initialMeds = [
-  {
-    id: '1',
-    name: 'Paracetamol',
-    dosage: '100mg',
-    form: 'Tablet',
-    times: ['08.00 AM'],
-    repeat: 'Every day',
-    startDate: '2024-06-01',
-    duration: 'Ongoing',
-    prescribedBy: 'Dr. Ahmad',
-    sideEffects: 'Mual ringan, pusing',
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    id: '2',
-    name: 'Paracetamol',
-    dosage: '100mg',
-    form: 'Tablet',
-    times: ['08.00 AM'],
-    repeat: 'Every day',
-    startDate: '2024-06-01',
-    duration: 'Ongoing',
-    prescribedBy: 'Dr. Ahmad',
-    sideEffects: 'Mual ringan, pusing',
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    id: '3',
-    name: 'Paracetamol',
-    dosage: '100mg',
-    form: 'Tablet',
-    times: ['08.00 AM'],
-    repeat: 'Every day',
-    startDate: '2024-06-01',
-    duration: 'Ongoing',
-    prescribedBy: 'Dr. Ahmad',
-    sideEffects: 'Mual ringan, pusing',
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    id: '4',
-    name: 'Paracetamol',
-    dosage: '100mg',
-    form: 'Tablet',
-    times: ['08.00 AM'],
-    repeat: 'Every day',
-    startDate: '2024-06-01',
-    duration: 'Ongoing',
-    prescribedBy: 'Dr. Ahmad',
-    sideEffects: 'Mual ringan, pusing',
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    id: '5',
-    name: 'Paracetamol',
-    dosage: '100mg',
-    form: 'Tablet',
-    times: ['08.00 AM'],
-    repeat: 'Every day',
-    startDate: '2024-06-01',
-    duration: 'Ongoing',
-    prescribedBy: 'Dr. Ahmad',
-    sideEffects: 'Mual ringan, pusing',
-    color: "bg-red-100 text-red-700",
-  }
-]
 
 function DetailRow({ icon, label, value }) {
   return (
@@ -281,21 +213,141 @@ function DaftarObatKartu({ med, onDelete }) {
 }
 
 export function DataObat() {
-  const [meds, setMeds] = useState(initialMeds);
+  const [meds, setMeds] = useState([]);
   const [search, setSearch] = useState("");
   const [view, setView] = useState("row");
-  // const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [errors, setErrors] = useState({});
 
+  // State untuk input form
+  const [name, setName] = useState("");
+  const [dosage, setDosage] = useState("");
+  const [formType, setFormType] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // State untuk menyimpan waktu
+  const [pagiTime, setPagiTime] = useState(null);
+  const [siangTime, setSiangTime] = useState(null);
+  const [soreTime, setSoreTime] = useState(null);
+  const [malamTime, setMalamTime] = useState(null);
+
+  // State untuk fitur search
   const filtered = meds.filter(
     (m) =>
       m.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  function handleDelete(id) {
-    setMeds((prev) => prev.filter((m) => m.id !== id));
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus data obat ini secara permanen?")
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/medicines/{id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setMeds((prev) => prev.filter((m) => m.id !== id));
+        alert("Obat berhasil dihapus dari database");
+      } else {
+        const errorData = await response.json();
+        alert(`Gagal menghapus data dari server: ${errorData.detail}`);
+      }
+    } catch (error) {
+      alert("Gagal terhubung ke server backend");
+    }
   }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!name || !dosage || !formType) {
+      alert("Mohon isi nama obat, dosis, dan satuan");
+      return;
+    }
+
+    setLoading(true);
+
+    // mengumpulkan waktu minum yang diisi pengguna
+    const timesArray = [];
+    if (pagiTime) timesArray.push(`${dayjs(pagiTime).format("HH.mm")} AM`)
+    if (siangTime) timesArray.push(`${dayjs(siangTime).format("HH.mm")} PM`)
+    if (soreTime) timesArray.push(`${dayjs(soreTime).format("HH.mm")} PM`)
+    if (malamTime) timesArray.push(`${dayjs(malamTime).format("HH.mm")} PM`)
+
+    if (timesArray.length === 0)
+    {
+      timesArray.push("08.00 AM") // Default waktu kalau si pengguna enggak input data waktunya
+    }
+
+    const payload = {
+      name: name,
+      dosage: parseInt(dosage),
+      form: formType,
+      times: timesArray.length,
+      repeat: "Every day"
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/medicines/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        await fetchMeds();
+
+        setIsModalOpen(false);
+
+        setName("");
+        setDosage("");
+        setFormType("");
+
+        alert("Obat baru berhasil disimpan ke database");
+      } else {
+        const errorData = await response.json();
+        alert(`Gagal menyimpan data ke server: ${errorData.detail}`);
+      }
+    } catch (error) {
+      alert("Gagal terhubung ke server backend");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMeds = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/medicines/");
+      if (response.ok) {
+        const dataDariBackend = await response.json();
+
+        const mappedMeds = dataDariBackend.map((item) => ({
+          id: String(item.id),
+          name: item.name,
+          dosage: `${item.dosage}mg`,
+          form: item.form,
+          times: [`${item.times}x sehari`],
+          repeat: item.repeat || "Every day",
+          startDate: dayjs().format("YYYY-MM-DD"),
+          duration: "Ongoing",
+          color: "bg-blue-100 text-blue-700"
+        }));
+
+        setMeds(mappedMeds);
+      } else {
+        console.error("Gagal mengambil data obat dari server");
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan koneksi saat mengambil data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeds();
+  }, []);
 
   return (
     <>
@@ -374,13 +426,16 @@ export function DataObat() {
               </button>
             </div>
             {/* Field Untuk Data Obat nya */}
-            <form className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">
                   Nama Obat
                 </label>
                 <input
                   type="text"
+                  required
+                  valie={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Silahkan Masukkan Nama Obat"
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2DCDDF] focus:border-transparent transition-all" />
               </div>
@@ -392,6 +447,9 @@ export function DataObat() {
                     </label>
                     <input
                       type="number"
+                      required
+                      value={dosage}
+                      onChange={(e) => setDosage(e.target.value)}
                       placeholder="Masukkan Dosis"
                       className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2DCDDF] focus:border-transparent transition-all" />
                   </div>
@@ -399,7 +457,7 @@ export function DataObat() {
                     <label className="text-sm font-semibold text-gray-700">
                       Satuan
                     </label>
-                    <Select>
+                    <Select value={formType} onValueChange={(value) => setFormType(value)}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Pilih Satuan" />
                       </SelectTrigger>
@@ -417,6 +475,8 @@ export function DataObat() {
                   </div>
                 </div>
               </div>
+
+              {/* Input waktu minum */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">
                   Waktu Minum
@@ -425,23 +485,42 @@ export function DataObat() {
                   <div className="grid grid-cols-2 gap-4 mt-1">
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-600">Pagi</span>
-                      <TimePicker defaultValue={dayjs('2022-04-17T15:30')} />
+                      <TimePicker value={pagiTime} onChange={(newValue) => setPagiTime(newValue)} />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-600">Siang</span>
-                      <TimePicker />
+                      <TimePicker value={siangTime} onChange={(newValue) => setSiangTime(newValue)}/>
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-600">Sore</span>
-                      <TimePicker />
+                      <TimePicker value={soreTime} onChange={(newValue) => setSoreTime(newValue)}/>
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-600">Malam</span>
-                      <TimePicker />
+                      <TimePicker value={malamTime} onChange={(newValue) => setMalamTime(newValue)} />
                     </div>
                   </div>
                 </LocalizationProvider>
               </div>
+
+              {/* Tombol Aksi */}
+              <div className="flex justify-end gap-3 mt-4 border-t pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-4 border rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  >
+                    Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-4 border rounded-lg bg-[#2DCDDF] hover:bg-[#25B4C4] text-white text-sm font-medium disabled-opacity-50"
+                >
+                  {loading ? "Menyimpan..." : "Simpan Obat"}
+                </button>
+              </div>
+
             </form>
           </div>
         </div>

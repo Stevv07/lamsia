@@ -18,7 +18,7 @@ const router = createBrowserRouter([
       },
       {
         path: "jadwal",
-        element: <JadwalObat/>
+        element: <JadwalObat />
       },
       {
         path: "obat",
