@@ -242,7 +242,7 @@ export function DataObat() {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/medicines/{id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/medicines/${parseInt(id)}`, {
         method: "DELETE",
       });
 
@@ -251,7 +251,7 @@ export function DataObat() {
         alert("Obat berhasil dihapus dari database");
       } else {
         const errorData = await response.json();
-        alert(`Gagal menghapus data dari server: ${errorData.detail}`);
+        alert(`Gagal menghapus data dari server: ${JSON.stringify(errorData.detail)}`);
       }
     } catch (error) {
       alert("Gagal terhubung ke server backend");
