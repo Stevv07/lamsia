@@ -87,7 +87,7 @@ export default function AppLayout() {
                 <div className="text-[10px] text-gray-500">Smart Medicine Box</div>
               </div>
             </header>
-            <div className="p-4 md:p-8 lg:p-10">
+            <div className="p-2 md:p-8 lg:p-10">
               <Outlet />
             </div>
           </main>

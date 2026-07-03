@@ -1,3 +1,6 @@
+// ============== //
+// IMPORT LIBRARY //
+// ============== //
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/pageHeader';
@@ -28,11 +31,15 @@ import {
   Plus,
   RefreshCw,
   Trash2,
-  Search
+  Search,
+  Package
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.jsx';
 import { Input } from '@/components/ui/input.jsx';
 
+// ================================ //
+// KOMPONEN DETAIL UNTUK YANG BARIS //
+// ================================ //
 function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center gap-2">
@@ -43,6 +50,9 @@ function DetailRow({ icon, label, value }) {
   )
 }
 
+// ================================ //
+// KOMPONEN DETAIL UNTUK YANG KARTU //
+// ================================ //
 function DetailField({ label, value }) {
   return (
     <div>
@@ -52,6 +62,9 @@ function DetailField({ label, value }) {
   )
 }
 
+// ================================================= //
+// KOMPONEN UNTUK MENAMPILKAN OBAT DALA BENTUK BARIS //
+// ================================================= //
 function DaftarObatBaris({ med, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   
@@ -61,8 +74,8 @@ function DaftarObatBaris({ med, onDelete }) {
         <div className={`flex shrink-0 items-center justify-center size-12 rounded-full ${med.color.split(" ")[0]}`}>
           <Pill className={`size-6 ${med.color.split(" ")[1]}`}/>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-1">
+        <div className="flex-1 min-w-0 items-center">
+          <div className="flex flex-wrap items-center gap-2 mb-1 text-center">
             <h3 className="font-bold text-slate-800 text-lg leading-tight">
               {med.name}
             </h3>
@@ -99,6 +112,7 @@ function DaftarObatBaris({ med, onDelete }) {
             <DetailRow icon={<CalendarDays className="size-4 text-slate-400"/>} label="Start date" value={med.startDate || "-"}/>
             <DetailRow icon={<Clock className="size-4 text-slate-400"/>} label="Duration" value={med.duration || "-"}/>
             <DetailRow icon={<RefreshCw className="size-4 text-slate-400"/>} label="Repeat" value={med.repeat || "-"}/>
+            <DetailRow icon={<Package className="size-4 text-slate-400"/>} label="Quantity" value={med.quantity || "-"}/>
           </div>
         </div>
       )}
@@ -106,6 +120,9 @@ function DaftarObatBaris({ med, onDelete }) {
   )
 }
 
+// ================================================== //
+// KOMPONEN UNTUK MENAMPILKAN OBAT DALAM BENTUK KARTU //
+// ================================================== //
 function DaftarObatKartu({ med, onDelete }) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -212,6 +229,9 @@ function DaftarObatKartu({ med, onDelete }) {
   );
 }
 
+// =================================================== //
+// KOMPONEN UTAMA YANG AKAN DITAMPILKAN DI WEBSITE NYA //
+// =================================================== //
 export function DataObat() {
   const [meds, setMeds] = useState([]);
   const [search, setSearch] = useState("");
@@ -222,6 +242,8 @@ export function DataObat() {
   const [name, setName] = useState("");
   const [dosage, setDosage] = useState("");
   const [formType, setFormType] = useState("");
+  const [kompartemen, setKompartemen] = useState("")
+  const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
 
   // State untuk menyimpan waktu
@@ -261,8 +283,8 @@ export function DataObat() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name || !dosage || !formType) {
-      alert("Mohon isi nama obat, dosis, dan satuan");
+    if (!name || !dosage || !formType || !quantity || !kompartemen) {
+      alert("Mohon isi semua field yang diperlukan");
       return;
     }
 
@@ -285,6 +307,8 @@ export function DataObat() {
       dosage: parseInt(dosage),
       form: formType,
       times: timesArray.length,
+      quantity: parseInt(quantity),
+      kompartemen: parseInt(kompartemen),
       repeat: "Every day"
     }
 
@@ -305,7 +329,12 @@ export function DataObat() {
         setName("");
         setDosage("");
         setFormType("");
-
+        setQuantity("");
+        setKompartemen("");
+        setPagiTime(null);
+        setSiangTime(null);
+        setSoreTime(null);
+        setMalamTime(null);
         alert("Obat baru berhasil disimpan ke database");
       } else {
         const errorData = await response.json();
@@ -330,6 +359,8 @@ export function DataObat() {
           dosage: `${item.dosage}mg`,
           form: item.form,
           times: [`${item.times}x sehari`],
+          quantity: `${item.quantity} pcs`,
+          kompartemen: item.kompartemen,
           repeat: item.repeat || "Every day",
           startDate: dayjs().format("YYYY-MM-DD"),
           duration: "Ongoing",
@@ -357,7 +388,7 @@ export function DataObat() {
         subtitle="Kelola dan lihat daftar obat Anda"
       >
         {/* Tombol Tambah */}
-        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 rounded-lg bg-[#2DCDDF] hover:bg-[#25B4C4] text-white px-5 py-2.5">
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 rounded-lg bg-[#2DCDDF] hover:bg-[#25B4C4] text-white px-2 py-2.5">
           <Plus className="size-4 mr-2" />
           Tambah Obat
         </button>
@@ -473,6 +504,40 @@ export function DataObat() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+              </div>
+
+              {/* Jumlah Obat dan Kompartemen Obat */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-gray-700">
+                    Jumlah Obat
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    placeholder="Masukkan Jumlah Obat"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2DCDDF] focus:border-transparent transition-all" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-gray-700">
+                    Kompartemen Obat
+                  </label>
+                  <Select value={kompartemen} onValueChange={(value) => setKompartemen(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih Kompartemen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Kompartemen</SelectLabel>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
