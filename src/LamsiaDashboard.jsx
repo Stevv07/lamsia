@@ -1,5 +1,5 @@
 import { KartuStatistik } from "@/components/KartuStatistik";
-import { JadwalHari } from "@/components/jadwalHari";
+import { ChartKepatuhanBulanan } from "@/components/chart-kepatuhan-bulanan";
 import { Alerts } from "@/components/alerts";
 
 export function BerandaDashboard() {
@@ -12,8 +12,8 @@ export function BerandaDashboard() {
 
       <KartuStatistik />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 mt-6">
-        <JadwalHari />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 mt-6 items-start">
+        <ChartKepatuhanBulanan />
         <Alerts />
       </div>
     </>
