@@ -1,25 +1,31 @@
-const alerts = [
-  {
-    icon: "⚠️",
-    type: "warning",
-    text: "Terlewat minum obat pada pukul 10:00 pagi hari ini",
-    time: "2 jam lalu",
-  },
-  {
-    icon: "🔋",
-    type: "battery",
-    text: "Level baterai berada di 85%",
-    time: "5 jam lalu",
-  },
-  {
-    icon: "✓",
-    type: "check",
-    text: "Semua obat pagi telah diminum",
-    time: "2 jam lalu",
-  },
-];
+function formatTime(dateString) {
+  if (!dateString) return "-";
 
-export function Alerts() {
+  return new Date(dateString).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getIconColor(type) {
+  switch (type) {
+    case "check":
+      return "text-[#4DD9C0]";
+
+    case "battery":
+      return "text-blue-500";
+
+    case "warning":
+      return "text-[#F5A623]";
+
+    default:
+      return "text-gray-500";
+  }
+}
+
+export function Alerts({ alerts = []}) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
@@ -27,17 +33,16 @@ export function Alerts() {
         <div className="font-bold text-lg text-gray-900">Peringatan Terbaru</div>
       </div>
       <div className="flex flex-col gap-3">
-        {alerts.map((alert, i) => (
-          <div className="p-4 bg-gray-50 rounded-xl" key={i}>
+        {alerts.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Belum ada peringatan.
+          </div>
+        ) : (
+          alerts.map((alert, i) => (
+          <div className="p-4 bg-gray-50 rounded-xl" key={`${alert.type}-${alert.time}`}>
             <div className="flex items-start gap-3">
               <span
-                className={`text-lg mt-0.5 ${
-                  alert.type === "check"
-                    ? "text-[#4DD9C0]"
-                    : alert.type === "battery"
-                    ? "text-blue-500"
-                    : "text-[#F5A623]"
-                }`}
+                className={`text-lg mt-0.5 ${getIconColor(alert.type)}`}
               >
                 {alert.icon}
               </span>
@@ -47,7 +52,7 @@ export function Alerts() {
               </div>
             </div>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   )
