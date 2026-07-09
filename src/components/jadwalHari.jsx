@@ -1,28 +1,84 @@
-const scheduleData = [
-  { time: "08:00 AM", name: "Aspirin 100mg", status: "taken" },
-  { time: "12:00 PM", name: "Metformin 500mg", status: "taken" },
-  { time: "02:00 PM", name: "Vitamin D", status: "taken" },
-  { time: "06:00 PM", name: "Lisinopril 10mg", status: "taken" },
-  { time: "10:00 PM", name: "Atorvastatin 20mg", status: "taken" },
-];
+export function JadwalHari({ data = [] }) {
+  const statusConfig = {
+    taken: {
+      label: "Taken",
+      className: "bg-[#D0F5EE] text-[#1A9E83]",
+      icon: "✓",
+    },
+    pending: {
+      label: "Pending",
+      className: "bg-[#FFF0E6] text-[#F5A623]",
+      icon: "🕒",
+    },
+    late: {
+      label: "Late",
+      className: "bg-yellow-100 text-yellow-700",
+      icon: "⚠",
+    },
+    missed: {
+      label: "Missed",
+      className: "bg-red-100 text-red-600",
+      icon: "✕",
+    },
+  };
 
-export function JadwalHari() {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
-        <div className="flex w-10 h-10 items-center justify-center bg-[#E8FAF7] text-[#4DD9C0] rounded-xl text-lg">🔗</div>
-        <div className="font-bold text-lg text-gray-900">Jadwal hari ini</div>
-      </div>
-      {scheduleData.map((item, i) => (
-        <div className={`flex flex-wrap items-center py-3.5 gap-4 ${i !== scheduleData.length - 1 ? "border-b border-gray-100" : ""}`} key={i}>
-          <div className="text-sm text-gray-500 w-24 font-medium">{item.time}</div>
-          <div className="flex-1 text-sm font-semibold text-gray-900">{item.name}</div>
-          <div className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-semibold ${item.status === 'taken' ? "bg-[#D0F5EE] text-[#1A9E83]" : "bg-[#FFF0E6] text-[#F5A623]"}`}>
-            <span className="text-sm">✓</span>
-            {item.status === "taken" ? "Taken" : "Pending"}
-          </div>
+        <div className="flex w-10 h-10 items-center justify-center bg-[#E8FAF7] text-[#4DD9C0] rounded-xl text-lg">
+          💊
         </div>
-      ))}
+
+        <div className="font-bold text-lg text-gray-900">
+          Jadwal hari ini
+        </div>
+      </div>
+
+      {data.length === 0 ? (
+        <div className="py-8 text-center text-gray-400">
+          Tidak ada jadwal obat pada hari ini.
+        </div>
+      ) : (
+        data.map((item, index) => {
+          const status =
+            statusConfig[item.status] || statusConfig.pending;
+
+          return (
+            <div
+              key={item.history_id}
+              className={`flex flex-wrap items-center py-3.5 gap-4 ${
+                index !== data.length - 1
+                  ? "border-b border-gray-100"
+                  : ""
+              }`}
+            >
+              {/* Jam */}
+              <div className="w-24 text-sm font-medium text-gray-500">
+                {item.time}
+              </div>
+
+              {/* Nama Obat */}
+              <div className="flex-1">
+                <div className="text-sm font-semibold text-gray-900">
+                  {item.medicine_name}
+                </div>
+
+                <div className="text-xs text-gray-500 mt-1">
+                  {item.dosage} mg
+                </div>
+              </div>
+
+              {/* Status */}
+              <div
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${status.className}`}
+              >
+                <span>{status.icon}</span>
+                {status.label}
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
-  )
+  );
 }
