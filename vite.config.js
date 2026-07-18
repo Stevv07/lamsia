@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
-  ],
+  ],  
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
