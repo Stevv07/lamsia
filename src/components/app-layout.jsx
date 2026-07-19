@@ -1,9 +1,5 @@
-// import { useState } from "react";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-// import { KartuStatistik} from "@/components/kartuStatistik";
-// import { JadwalHari } from "@/components/jadwalHari";
-// import { Alerts } from "@/components/alerts";
 import { Outlet } from "react-router-dom";
 
 // const styles = `
@@ -83,24 +79,17 @@ export default function AppLayout() {
           <AppSidebar />
 
           {/* Main Content */}
-          <main className="flex-1 p-8 lg:p-10 max-h-screen overflow-y-auto">
-            <Outlet />
-            {/* <div className="font-bold text-3xl text-gray-900 tracking-tight">Dashboard</div>
-            <div className="text-sm text-gray-500 mt-2 mb-8">
-              Selamat datang kembali! Berikut adalah tinjauan obat Anda
-            </div> */}
-
-            {/* Stat Cards */}
-            {/* <KartuStatistik /> */}
-
-            {/* Bottom Grid */}
-            {/* <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6"> */}
-              {/* Schedule */}
-              {/* <JadwalHari /> */}
-
-              {/* Alerts */}
-              {/* <Alerts /> */}
-            {/* </div> */}
+          <main className="flex-1 max-h-screen overflow-y-auto">
+            <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-[#E2EDF2] bg-[#EEF7F9] px-4 py-3 md:hidden">
+              <SidebarTrigger className="size-9 shrink-0" />
+              <div className="min-w-0">
+                <div className="brand-name text-base leading-tight">LAMSIA</div>
+                <div className="text-[10px] text-gray-500">Smart Medicine Box</div>
+              </div>
+            </header>
+            <div className="p-2 md:p-8 lg:p-10">
+              <Outlet />
+            </div>
           </main>
         </SidebarProvider>
       </div>

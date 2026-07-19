@@ -6,6 +6,7 @@ import AppLayout from '@/components/app-layout.jsx'
 import { JadwalObat } from '@/jadwalObat.jsx'
 import { RiwayatPage } from '@/riwayat.jsx'
 import { BerandaDashboard } from './LamsiaDashboard'
+import { DataObat } from '@/daftarObat.jsx'
 
 const router = createBrowserRouter([
   {
@@ -18,12 +19,16 @@ const router = createBrowserRouter([
       },
       {
         path: "jadwal",
-        element: <JadwalObat/>
+        element: <JadwalObat />
+      },
+      {
+        path: "obat",
+        element: <DataObat/>
       },
       {
         path: "riwayat",
         element: <RiwayatPage/>
-      },
+      }
     ]
   }
 ]);

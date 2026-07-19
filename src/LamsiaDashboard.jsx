@@ -1,6 +1,7 @@
 import { KartuStatistik } from "@/components/KartuStatistik";
 import { ChartKepatuhanBulanan } from "@/components/chart-kepatuhan-bulanan";
 import { Alerts } from "@/components/alerts";
+import { PageHeader } from "@/components/pageHeader";
 
 import { useDashboard } from "@/hooks/useDashboard";
 
@@ -29,10 +30,10 @@ export function BerandaDashboard() {
 
   return (
     <>
-      <div className="font-bold text-3xl text-gray-900 tracking-tight">Dashboard</div>
-      <div className="text-sm text-gray-500 mt-2 mb-8">
-        Selamat datang kembali! Berikut adalah tinjauan obat Anda
-      </div>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Selamat datang kembali! Berikut adalah tinjauan obat Anda"
+      />
 
       <KartuStatistik statistics={dashboard.statistics}/>
 
