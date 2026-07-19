@@ -1,9 +1,5 @@
-// import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-// import { KartuStatistik} from "@/components/kartuStatistik";
-// import { JadwalHari } from "@/components/jadwalHari";
-// import { Alerts } from "@/components/alerts";
 import { Outlet } from "react-router-dom";
 
 // const styles = `
@@ -73,37 +69,17 @@ import { Outlet } from "react-router-dom";
 // `;
 
 export default function AppLayout() {
-
   return (
-    <>
-      {/* <style>{styles}</style> */}
-      <div className="flex min-h-screen bg-[#EEF7F9] font-sans">
-        {/* Sidebar */}
-        <SidebarProvider>
-          <AppSidebar />
+    <div className="flex min-h-screen bg-[#EEF7F9] font-sans">
+      {/* Sidebar */}
+      <SidebarProvider>
+        <AppSidebar />
 
-          {/* Main Content */}
-          <main className="flex-1 p-8 lg:p-10 max-h-screen overflow-y-auto">
-            <Outlet />
-            {/* <div className="font-bold text-3xl text-gray-900 tracking-tight">Dashboard</div>
-            <div className="text-sm text-gray-500 mt-2 mb-8">
-              Selamat datang kembali! Berikut adalah tinjauan obat Anda
-            </div> */}
-
-            {/* Stat Cards */}
-            {/* <KartuStatistik /> */}
-
-            {/* Bottom Grid */}
-            {/* <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6"> */}
-              {/* Schedule */}
-              {/* <JadwalHari /> */}
-
-              {/* Alerts */}
-              {/* <Alerts /> */}
-            {/* </div> */}
-          </main>
-        </SidebarProvider>
-      </div>
-    </>
+        {/* Main Content */}
+        <main className="flex-1 p-8 lg:p-10 min-h-screen overflow-y-auto">
+          <Outlet />
+        </main>
+      </SidebarProvider>
+    </div>
   );
 }

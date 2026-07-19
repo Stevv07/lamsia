@@ -1,12 +1,61 @@
-const adherenceBars = [
-  { day: "Mon", value: 5 },
-  { day: "Tue", value: 5 },
-  { day: "Wed", value: 4 },
-  { day: "Thu", value: 5 },
-  { day: "Fri", value: 4 },
-  { day: "Sat", value: 5 },
-  { day: "Sun", value: 5 },
-];
+"use client"
+
+import { useState } from 'react'
+import * as React from 'react'
+import { addDays, format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
+
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+
+import {
+  Card,
+  CardTitle,
+  CardHeader,
+  CardContent,
+  CardDescription,
+  CardFooter
+} from "@/components/ui/card"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
+
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+export const description = "A bar chart"
+
+const chartData = [
+  { day: "Senin", Diambil: 5, Terlambat: 1 },
+  { day: "Selasa", Diambil: 4, Terlambat: 0 },
+  { day: "Rabu", Diambil: 2, Terlambat: 2 },
+  { day: "Kamis", Diambil: 3, Terlambat: 3 },
+  { day: "Jumat", Diambil: 1, Terlambat: 1 },
+  { day: "Sabtu", Diambil: 6, Terlambat: 4 },
+  { day: "Minggu", Diambil: 4, Terlambat: 3 },
+]
+
+const chartConfig = {
+  Diambil: {
+    label: "Diambil",
+    color: "#246BFF"
+  },
+  Terlambat: {
+    label: "Terlambat",
+    color: "#EF4444"
+  }
+}
 
 const medicationEntries = [
   {
@@ -55,64 +104,100 @@ const bloodPressureCards = [
   { date: "Jun 8", time: "07:00 PM", value: "126 / 81", pulse: "73 bpm", status: "Stage 1", tone: "bg-amber-100 text-amber-700", trend: "↘" },
 ];
 
-function AdherenceChart() {
-  const maxHeight = 96;
+function DatePickerWithRange() {
+  const [date, setDate] = useState({
+    from: new Date(new Date().getFullYear(), 0, 20),
+    to: addDays(new Date(new Date().getFullYear(), 0, 20), 20)
+  })
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-      <div className="mb-8">
-        <div className="font-bold text-2xl text-slate-900">This Week's Adherence</div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white px-4 py-5">
-        <div className="h-72">
-          <div className="relative h-full">
-            <div className="absolute inset-0 grid grid-cols-7 items-end gap-8 px-6 pb-8">
-              {adherenceBars.map((item) => (
-                <div key={item.day} className="flex h-full flex-col items-center justify-end gap-2">
-                  <div
-                    className="w-10 rounded-t-md bg-[#EF4444] shadow-[0_8px_20px_rgba(239,68,68,0.18)]"
-                    style={{ height: `${(item.value / maxHeight) * 100}%` }}
-                  />
-                  <div className="text-sm text-slate-400">{item.day}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="absolute inset-0 pointer-events-none">
-              {[0, 2, 4, 6, 8].map((tick) => {
-                const top = `${100 - (tick / maxHeight) * 100}%`;
-                return (
-                  <div key={tick} className="absolute left-0 right-0 border-t border-dashed border-slate-200" style={{ top }}>
-                    <span className="absolute left-0 -translate-y-1/2 -translate-x-2 text-xs text-slate-400">
-                      {tick}
-                    </span>
-                  </div>
-                );
-              })}
-              <div className="absolute left-6 right-6 bottom-8 border-t border-slate-300" />
-              <div className="absolute left-6 top-0 bottom-8 border-l border-slate-300" />
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap justify-center gap-6 text-sm text-slate-600">
-          <div className="flex items-center gap-2"><span className="h-4 w-4 rounded-full bg-emerald-500" /> Taken</div>
-          <div className="flex items-center gap-2"><span className="h-4 w-4 rounded-full bg-[#EF4444]" /> Missed</div>
-        </div>
-      </div>
+    <div className="w-70">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" id="date-picker-range" className="justify-start px-2.5 font-normal">
+            <CalendarIcon data-icon="inline-start"/>
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y")} - {" "}
+                  {format(date.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pilih hari</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+      </Popover>
     </div>
-  );
+  )
 }
 
-function LogTabButtons() {
+function ChartBarMultiple() {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Bar Chart</CardTitle>
+          <CardDescription>Senin - Minggu 2026</CardDescription>
+        </div>
+        <DatePickerWithRange className="items-center mx-auto"/>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <BarChart accessibilityLayer data={chartData}>
+            <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="day"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="dashed" />}
+              />
+              <Bar dataKey="Diambil" fill="var(--color-Diambil)" radius={4} />
+              <Bar dataKey="Terlambat" fill="var(--color-Terlambat)" radius={4} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex flex-row items-center mx-auto gap-8 text-sm">
+        <div className="flex gap-2 font-medium items-center">
+          <div className="size-3 rounded-full bg-[#246BFF]"></div><span>Diambil</span>
+        </div>
+        <div className="flex gap-2 font-medium items-center">
+          <div className="size-3 rounded-lg bg-[#EF4444]"></div><span className="">Terlambat</span>
+        </div>
+      </CardFooter>
+    </Card>
+  )
+}
+
+function LogTabButtons({ activeTab, onChange }) {
   return (
     <div className="flex flex-wrap gap-3">
-      <button className="inline-flex items-center gap-2 rounded-2xl bg-[#246BFF] px-5 py-3 font-semibold text-white shadow-[0_12px_28px_rgba(36,107,255,0.28)]">
+      <button
+        onClick={() => onChange('medication')}
+        className={activeTab === 'medication' ? "inline-flex items-center gap-2 rounded-2xl bg-[#246BFF] px-5 py-3 font-semibold text-white shadow-[0_12px_28px_rgba(36,107,255,0.28)] cursor-pointer" : "inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-600 shadow-sm cursor-pointer"}>
         <span>↺</span>
         Medication Log
       </button>
-      <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-600 shadow-sm">
+      <button
+        onClick={() => onChange('blood-pressure')}
+        className={activeTab === 'blood-pressure' ? "inline-flex items-center gap-2 rounded-2xl bg-[#246BFF] px-5 py-3 font-semibold text-white shadow-[0_12px_28px_rgba(36,107,255,0.28)] cursor-pointer" : "inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-600 shadow-sm cursor-pointer"}>
         <span>♡</span>
         Blood Pressure Log
       </button>
@@ -128,7 +213,7 @@ function MedicationLogCard() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-500 text-xl">⟲</div>
           <div>
             <div className="text-2xl font-bold text-slate-900">Detailed Medication Log</div>
-            <div className="text-sm text-slate-500">Time taken, delays, and caregiver — filter by date below</div>
+            <div className="text-sm text-slate-500">Waktu ambil dan terlambat. Filter berdasarkan tanggal</div>
           </div>
         </div>
         <div className="flex items-center gap-4 text-sm text-slate-500">
@@ -139,18 +224,26 @@ function MedicationLogCard() {
       </div>
 
       <div className="mx-6 mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-        <div className="grid gap-4 md:grid-cols-[160px_160px_1fr] md:items-center">
-          <div>
-            <div className="text-sm font-medium text-slate-500">From</div>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-500">dd/mm/yyyy</div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 items-center">
+          <div className="flex flex-col">
+            <div className="text-sm font-medium text-slate-500 w-10">From</div>
+            <LocalizationProvider className="m-auto" dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker label="Pilih Tanggal Mulai" />
+              </DemoContainer>
+            </LocalizationProvider>
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="text-sm font-medium text-slate-500">To</div>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-500">dd/mm/yyyy</div>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker label="Pilih Tanggal Selesai" />
+              </DemoContainer>
+            </LocalizationProvider>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <button className="rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-500">Reset</button>
-            <div className="text-sm text-slate-500">Showing 4 days</div>
+          <div className="flex items-center justify-between col-span-2">
+            <button className="rounded-xl cursor-pointer lg:mt-6 border border-slate-200 bg-white p-3 font-medium text-slate-500">Reset</button>
+            <div className="lg:mt-5 text-sm text-slate-500">Showing 4 days</div>
           </div>
         </div>
       </div>
@@ -205,10 +298,6 @@ function MedicationLogCard() {
             ))}
           </div>
         </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-          Use this section for the full medication history list if you want the log to continue beyond the visible rows.
-        </div>
       </div>
     </div>
   );
@@ -222,25 +311,32 @@ function BloodPressureLogCard() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-500 text-xl">♡</div>
           <div>
             <div className="text-2xl font-bold text-slate-900">Blood Pressure Log</div>
-            <div className="text-sm text-slate-500">Filter by date range below</div>
+            <div className="text-sm text-slate-500">Filter berdasarkan tanggal</div>
           </div>
         </div>
-        <button className="rounded-xl border border-rose-200 px-4 py-3 font-medium text-rose-500">+ Log Reading</button>
       </div>
 
       <div className="mx-6 mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-        <div className="grid gap-4 md:grid-cols-[160px_160px_1fr] md:items-center">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-center">
           <div>
             <div className="text-sm font-medium text-slate-500">From</div>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-500">dd/mm/yyyy</div>
+            <LocalizationProvider className="m-auto" dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker label="Pilih Tanggal Mulai" />
+              </DemoContainer>
+            </LocalizationProvider>
           </div>
           <div>
             <div className="text-sm font-medium text-slate-500">To</div>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-500">dd/mm/yyyy</div>
+            <LocalizationProvider className="m-auto" dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker label="Pilih Tanggal Mulai" />
+              </DemoContainer>
+            </LocalizationProvider>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <button className="rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-500">Reset</button>
-            <div className="text-sm text-slate-500">Showing 8 readings</div>
+          <div className="flex items-center justify-between col-span-2">
+            <button className="rounded-xl cursor-pointer mt-5 border border-slate-200 bg-white px-4 py-3 font-medium text-slate-500">Reset</button>
+            <div className="mt-4 text-sm text-slate-500">Showing 8 readings</div>
           </div>
         </div>
       </div>
@@ -299,6 +395,8 @@ function BloodPressureLogCard() {
 }
 
 export function RiwayatPage() {
+  const [activeTab, setActiveTab] = useState('medication');
+
   return (
     <div className="space-y-8 pb-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -306,22 +404,18 @@ export function RiwayatPage() {
           <div className="text-4xl font-bold tracking-tight text-slate-900">History</div>
           <div className="mt-3 text-lg text-slate-600">Medication records &amp; health readings</div>
         </div>
-
-        <div className="flex flex-wrap gap-3">
-          <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 shadow-sm">
-            ⌄ Filter
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-2xl bg-[#246BFF] px-5 py-3 font-semibold text-white shadow-[0_12px_28px_rgba(36,107,255,0.28)]">
-            ⬇ Export Report
-          </button>
-        </div>
       </div>
 
-      <AdherenceChart />
-      <LogTabButtons />
-      <MedicationLogCard />
-      <LogTabButtons />
-      <BloodPressureLogCard />
+      <ChartBarMultiple />
+      <LogTabButtons
+        activeTab={activeTab}
+        onChange={setActiveTab}
+      />
+      {
+        activeTab === 'medication'
+          ? <MedicationLogCard />
+          : <BloodPressureLogCard />
+      }
     </div>
   );
 }
