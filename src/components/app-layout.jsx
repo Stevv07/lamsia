@@ -69,15 +69,11 @@ import { Outlet } from "react-router-dom";
 // `;
 
 export default function AppLayout() {
-
   return (
-    <>
-      {/* <style>{styles}</style> */}
-      <div className="flex min-h-screen bg-[#EEF7F9] font-sans">
-        {/* Sidebar */}
-        <SidebarProvider>
-          <AppSidebar />
-
+    <div className="flex min-h-screen bg-[#EEF7F9] font-sans">
+      {/* Sidebar */}
+      <SidebarProvider>
+        <AppSidebar />
           {/* Main Content */}
           <main className="flex-1 max-h-screen overflow-y-auto">
             <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-[#E2EDF2] bg-[#EEF7F9] px-4 py-3 md:hidden">
@@ -91,8 +87,7 @@ export default function AppLayout() {
               <Outlet />
             </div>
           </main>
-        </SidebarProvider>
-      </div>
-    </>
+      </SidebarProvider>
+    </div>
   );
 }

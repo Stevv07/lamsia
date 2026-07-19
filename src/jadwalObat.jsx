@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { JadwalHari } from "@/components/jadwalHari.jsx";
 import { PageHeader } from '@/components/pageHeader.jsx';
+import { CalendarDays } from "lucide-react";
 import { getWeeklySchedule, getDailySchedule } from "@/services/scheduleService";
 
 export function JadwalObat() {

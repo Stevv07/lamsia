@@ -37,9 +37,7 @@ export function AppSidebar() {
             💊
           </div>
           <div>
-            {/* brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; line-height: 1.1; } */}
             <div className="brand-name">LAMSIA</div>
-            {/* brand-sub { color: var(--text-soft); */}
             <div className="text-xs font-normal mt-2">Smart Medicine Box</div>
           </div>
         </div>
@@ -70,9 +68,6 @@ export function AppSidebar() {
           <div className="text-xs font-semibold mb-3 text-gray-700">Device Status</div>
           <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
             <span>📶</span> Terkoneksi
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <span>🔋</span> 85% Battery
           </div>
         </div>
       </SidebarFooter>
