@@ -1,4 +1,4 @@
-import { KartuStatistik } from "@/components/KartuStatistik";
+import { KartuStatistik } from "@/components/kartuStatistik";
 import { ChartKepatuhanBulanan } from "@/components/chart-kepatuhan-bulanan";
 import { Alerts } from "@/components/alerts";
 import { PageHeader } from "@/components/pageHeader";
