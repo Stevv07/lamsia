@@ -91,6 +91,10 @@ function DaftarObatBaris({ med, onDelete }) {
               <RefreshCw className="size-5"/>
               {med.repeat}
             </span>
+            <span className="flex items-center gap-1">
+              <Package className="size-5"/>
+              Kompartemen {med.kompartemen}
+            </span>
           </div>
         </div>
 
@@ -205,6 +209,10 @@ function DaftarObatKartu({ med, onDelete }) {
             <CalendarDays className="size-3.5 text-slate-400 shrink-0" />
             <span className="truncate">{med.startDate}</span>
           </div>
+          <div className="flex items-center gap-2">
+            <Package className="size-3.5 text-slate-400"/>
+            <span>Kompartemen {med.kompartemen}</span>
+          </div>
         </div>
       </div>
 
@@ -234,6 +242,7 @@ function DaftarObatKartu({ med, onDelete }) {
 // =================================================== //
 export function DataObat() {
   const [meds, setMeds] = useState([]);
+  const [usedKompartemen, setUsedKompartemen] = useState([]);
   const [search, setSearch] = useState("");
   const [view, setView] = useState("row");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -244,6 +253,7 @@ export function DataObat() {
   const [formType, setFormType] = useState("");
   const [kompartemen, setKompartemen] = useState("")
   const [quantity, setQuantity] = useState("");
+  const [pengulangan, setPengulangan] = useState("Every day");
   const [loading, setLoading] = useState(false);
 
   // State untuk menyimpan waktu
@@ -291,29 +301,28 @@ export function DataObat() {
     setLoading(true);
 
     // mengumpulkan waktu minum yang diisi pengguna
-    const timesArray = [];
-    if (pagiTime) timesArray.push(`${dayjs(pagiTime).format("HH.mm")} AM`)
-    if (siangTime) timesArray.push(`${dayjs(siangTime).format("HH.mm")} PM`)
-    if (soreTime) timesArray.push(`${dayjs(soreTime).format("HH.mm")} PM`)
-    if (malamTime) timesArray.push(`${dayjs(malamTime).format("HH.mm")} PM`)
+    const waktu = [];
+    if (pagiTime) waktu.push(`${dayjs(pagiTime).format("HH.mm:ss")}`)
+    if (siangTime) waktu.push(`${dayjs(siangTime).format("HH.mm:ss")}`)
+    if (soreTime) waktu.push(`${dayjs(soreTime).format("HH.mm:ss")}`)
+    if (malamTime) waktu.push(`${dayjs(malamTime).format("HH.mm:ss")}`)
 
-    if (timesArray.length === 0)
+    if (waktu.length === 0)
     {
-      timesArray.push("08.00 AM") // Default waktu kalau si pengguna enggak input data waktunya
+      waktu.push("08:00:00") // Default waktu kalau si pengguna enggak input data waktunya
     }
 
     const payload = {
-      name: name,
-      dosage: parseInt(dosage),
-      form: formType,
-      times: timesArray.length,
-      quantity: parseInt(quantity),
+      nama_obat: name,
+      takaran_obat: formType,
+      dosis: parseInt(dosage),
       kompartemen: parseInt(kompartemen),
-      repeat: "Every day"
+      pengulangan: pengulangan,
+      waktu: waktu,
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/medicines/", {
+      const response = await fetch("http://127.0.0.1:8000/obats/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -330,6 +339,7 @@ export function DataObat() {
         setDosage("");
         setFormType("");
         setQuantity("");
+        setPengulangan("Setiap Hari");
         setKompartemen("");
         setPagiTime(null);
         setSiangTime(null);
@@ -349,25 +359,31 @@ export function DataObat() {
 
   const fetchMeds = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/medicines/");
+      const response = await fetch("http://127.0.0.1:8000/obats/");
       if (response.ok) {
         const dataDariBackend = await response.json();
 
         const mappedMeds = dataDariBackend.map((item) => ({
           id: String(item.id),
-          name: item.name,
-          dosage: `${item.dosage}mg`,
-          form: item.form,
-          times: [`${item.times}x sehari`],
-          quantity: `${item.quantity} pcs`,
+          name: item.nama_obat,
+          form: item.takaran_obat,
+          dosage: `${item.jadwal[0]?.dosis ?? "-"}`,
+          quantity: "-",
           kompartemen: item.kompartemen,
-          repeat: item.repeat || "Every day",
+          repeat: item.jadwal[0]?.pengulangan ?? "-",
+          times: item.jadwal.map(j =>
+            j.waktu_minum.substring(0,5)
+          ),
           startDate: dayjs().format("YYYY-MM-DD"),
           duration: "Ongoing",
-          color: "bg-blue-100 text-blue-700"
+          color: "bg-blue-100 text-blue-700",
         }));
 
         setMeds(mappedMeds);
+
+        setUsedKompartemen(
+          dataDariBackend.map((item) => String(item.kompartemen))
+        );
       } else {
         console.error("Gagal mengambil data obat dari server");
       }
@@ -388,7 +404,7 @@ export function DataObat() {
         subtitle="Kelola dan lihat daftar obat Anda"
       >
         {/* Tombol Tambah */}
-        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 rounded-lg bg-[#2DCDDF] hover:bg-[#25B4C4] text-white px-2 py-2.5">
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 cursor-pointer rounded-lg bg-[#2DCDDF] hover:bg-[#25B4C4] text-white px-2 py-2.5">
           <Plus className="size-4 mr-2" />
           Tambah Obat
         </button>
@@ -532,13 +548,56 @@ export function DataObat() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Kompartemen</SelectLabel>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
+                        <SelectItem
+                          value="1"
+                          disabled={usedKompartemen.includes("1")}
+                        >
+                          Kompartemen 1
+                        </SelectItem>
+                        <SelectItem
+                          value="2"
+                          disabled={usedKompartemen.includes("2")}
+                        >
+                          Kompartemen 2
+                        </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* Pengulangan */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">
+                  Pengulangan
+                </label>
+
+                <Select
+                  value={pengulangan}
+                  onValueChange={setPengulangan}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value="Every day">
+                      Every day
+                    </SelectItem>
+
+                    <SelectItem value="2 hari sekali">
+                      2 hari sekali
+                    </SelectItem>
+
+                    <SelectItem value="3 hari sekali">
+                      3 hari sekali
+                    </SelectItem>
+
+                    <SelectItem value="Seminggu sekali">
+                      Seminggu sekali
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Input waktu minum */}

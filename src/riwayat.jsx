@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import * as React from 'react'
+import { getMedicationHistory } from '@/services/historyService'
+
 import { addDays, format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 
@@ -205,7 +207,46 @@ function LogTabButtons({ activeTab, onChange }) {
   );
 }
 
-function MedicationLogCard() {
+function getMedicationStatus(status) {
+  switch (status) {
+    case "TAKEN":
+      return {
+        label: "Taken",
+        statusTone: "bg-emerald-100 text-emerald-700",
+        rowTone: "bg-[#F4FFFA] border-emerald-200/80"
+      };
+
+    case "LATE":
+      return {
+        label: "Delayed",
+        statusTone: "bg-amber-100 text-amber-700",
+        rowTone: "bg-[#FFFDF2] border-amber-200/80"
+      };
+
+    case "MISSED":
+      return {
+        label: "Missed",
+        statusTone: "bg-rose-100 text-rose-700",
+        rowTone: "bg-[#FFF5F5] border-rose-200/80"
+      };
+
+    case "PENDING":
+      return {
+        label: "Pending",
+        statusTone: "bg-slate-100 text-slate-700",
+        rowTone: "bg-slate-50 border-slate-200"
+      };
+
+    default:
+      return {
+        label: status,
+        statusTone: "bg-slate-100 text-slate-700",
+        rowTone: "bg-white border-slate-200"
+      };
+  }
+}
+
+function MedicationLogCard({ medicationHistory }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-4 px-6 pt-6">
@@ -264,38 +305,41 @@ function MedicationLogCard() {
           </div>
 
           <div className="mt-4 divide-y divide-amber-200 overflow-hidden rounded-2xl border border-amber-200">
-            {medicationEntries.map((entry) => (
-              <div key={entry.time} className={`${entry.rowTone} px-4 py-4`}>
-                <div className="grid gap-4 md:grid-cols-[120px_1fr_110px] md:items-center">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/70 text-2xl">
-                      ⟡
+            {medicationHistory.map((entry) => {
+              const status = getMedicationStatus(entry.status)
+              return (
+                <div key={entry.history_id} className={`${status.rowTone} px-4 py-4`}>
+                  <div className="grid gap-4 md:grid-cols-[120px_1fr_110px] md:items-center">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/70 text-2xl">
+                        ⟡
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900">{entry.time}</div>
+                        <div className="text-sm text-slate-500">scheduled</div>
+                      </div>
                     </div>
+
                     <div>
-                      <div className="font-bold text-slate-900">{entry.time}</div>
-                      <div className="text-sm text-slate-500">scheduled</div>
+                      <div className="text-lg font-bold text-slate-900">
+                        {entry.medicine_name} <span className="font-normal text-slate-500">— {entry.dosage} {entry.form}</span>
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-4 text-sm text-slate-500">
+                        <span>○ {entry.note}</span>
+                        <span>△ {entry.detail}</span>
+                        <span>{entry.caregiver}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <div className="text-lg font-bold text-slate-900">
-                      {entry.title} <span className="font-normal text-slate-500">— {entry.dose}</span>
+                    <div className="justify-self-end">
+                      <span className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold ${entry.statusTone}`}>
+                        {entry.status}
+                      </span>
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-4 text-sm text-slate-500">
-                      <span>○ {entry.note}</span>
-                      <span>△ {entry.detail}</span>
-                      <span>{entry.caregiver}</span>
-                    </div>
-                  </div>
-
-                  <div className="justify-self-end">
-                    <span className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold ${entry.statusTone}`}>
-                      {entry.status}
-                    </span>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
@@ -396,6 +440,21 @@ function BloodPressureLogCard() {
 
 export function RiwayatPage() {
   const [activeTab, setActiveTab] = useState('medication');
+  const [medicationHistory, setMedicationHistory] = useState([]);
+
+  useEffect(() => {
+    const fetchMedicationHistory = async () => {
+      try {
+        const data = await getMedicationHistory();
+        console.log("Medication History:", data);
+        setMedicationHistory(data);
+      } catch (error) {
+        console.error("Gagal mengambil riwayat obat:", error);
+      }
+    };
+
+    fetchMedicationHistory();
+  }, []);
 
   return (
     <div className="space-y-8 pb-8">
@@ -413,7 +472,7 @@ export function RiwayatPage() {
       />
       {
         activeTab === 'medication'
-          ? <MedicationLogCard />
+          ? <MedicationLogCard medicationHistory={medicationHistory} />
           : <BloodPressureLogCard />
       }
     </div>
