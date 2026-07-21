@@ -54,17 +54,17 @@ export function JadwalHari({ data = [] }) {
             >
               {/* Jam */}
               <div className="w-24 text-sm font-medium text-gray-500">
-                {item.time}
+                {item.waktu_minum}
               </div>
 
               {/* Nama Obat */}
               <div className="flex-1">
                 <div className="text-sm font-semibold text-gray-900">
-                  {item.medicine_name}
+                  {item.obat.nama_obat}
                 </div>
 
                 <div className="text-xs text-gray-500 mt-1">
-                  {item.dosage} mg
+                  {item.dosis} {item.obat.takaran_obat}
                 </div>
               </div>
 

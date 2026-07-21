@@ -292,28 +292,37 @@ export function DataObat() {
 
     // mengumpulkan waktu minum yang diisi pengguna
     const timesArray = [];
-    if (pagiTime) timesArray.push(`${dayjs(pagiTime).format("HH.mm")} AM`)
-    if (siangTime) timesArray.push(`${dayjs(siangTime).format("HH.mm")} PM`)
-    if (soreTime) timesArray.push(`${dayjs(soreTime).format("HH.mm")} PM`)
-    if (malamTime) timesArray.push(`${dayjs(malamTime).format("HH.mm")} PM`)
+
+    // Versi lama
+    // if (pagiTime) timesArray.push(`${dayjs(pagiTime).format("HH.mm")} AM`)
+    // if (siangTime) timesArray.push(`${dayjs(siangTime).format("HH.mm")} PM`)
+    // if (soreTime) timesArray.push(`${dayjs(soreTime).format("HH.mm")} PM`)
+    // if (malamTime) timesArray.push(`${dayjs(malamTime).format("HH.mm")} PM`)
+      
+    // Versi baru
+    if (pagiTime) timesArray.push(dayjs(pagiTime).format("HH:mm"))
+    if (siangTime) timesArray.push(dayjs(siangTime).format("HH:mm"))
+    if (soreTime) timesArray.push(dayjs(soreTime).format("HH:mm"))
+    if (malamTime) timesArray.push(dayjs(malamTime).format("HH:mm"))      
 
     if (timesArray.length === 0)
     {
-      timesArray.push("08.00 AM") // Default waktu kalau si pengguna enggak input data waktunya
+      timesArray.push("08:00 AM") // Default waktu kalau si pengguna enggak input data waktunya
     }
 
     const payload = {
-      name: name,
-      dosage: parseInt(dosage),
-      form: formType,
-      times: timesArray.length,
-      quantity: parseInt(quantity),
-      kompartemen: parseInt(kompartemen),
-      repeat: "Every day"
+      nama_obat: name,
+      // dosage: parseInt(dosage),
+      takaran_obat: formType,
+      // times: timesArray.length,
+      // quantity: parseInt(quantity),
+      // kompartemen: parseInt(kompartemen),
+      // repeat: "Every day"
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/medicines/", {
+      // Haru ganti ke route /obats yang awalnya /medicines
+      const response = await fetch("http://127.0.0.1:8000/obats/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -322,6 +331,35 @@ export function DataObat() {
       });
 
       if (response.ok) {
+
+        const obat = await response.json();
+
+        for (const time of timesArray) {
+
+          const addJadwalResponse = await fetch("http://127.0.0.1:8000/jadwals/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_obat: obat.id,
+              dosis: parseInt(dosage),
+              waktu_minum: time,
+            })
+          });
+        }
+
+        const updateKompartemen = fetch(`http://127.0.0.1:8000/kotakobats/${parseInt(kompartemen)}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // kotakobat_id: parseInt(kompartemen),
+            id_obat: obat.id,
+          })
+        });
+
         await fetchMeds();
 
         setIsModalOpen(false);
@@ -349,20 +387,21 @@ export function DataObat() {
 
   const fetchMeds = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/medicines/");
+      // Ganti route /medicines ke /obats karena backend sudah diubah
+      const response = await fetch("http://127.0.0.1:8000/obats/");
       if (response.ok) {
         const dataDariBackend = await response.json();
 
         const mappedMeds = dataDariBackend.map((item) => ({
           id: String(item.id),
-          name: item.name,
-          dosage: `${item.dosage}mg`,
-          form: item.form,
+          name: item.nama_obat,
+          dosage: `- mg`, // Sebelumnya `${item.dosage}mg`
+          form: item.takaran_obat,
           times: [`${item.times}x sehari`],
-          quantity: `${item.quantity} pcs`,
+          quantity: `- pcs`, // Sebelumnya `${item.quantity} pcs`
           kompartemen: item.kompartemen,
           repeat: item.repeat || "Every day",
-          startDate: dayjs().format("YYYY-MM-DD"),
+          startDate: dayjs().format("YYYY-MM-DD"), 
           duration: "Ongoing",
           color: "bg-blue-100 text-blue-700"
         }));

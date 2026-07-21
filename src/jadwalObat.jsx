@@ -16,8 +16,13 @@ export function JadwalObat() {
   useEffect(() => {
     const fetchWeekly = async () => {
       try {
-        const data = await getWeeklySchedule(selectedDate);
-        setWeekData(data.week);
+        // versi lama
+        // const data = await getWeeklySchedule(selectedDate);
+
+        // versi baru
+        const response = await fetch("http://127.0.0.1:8000/jadwals/");
+        const data = await response.json();
+        setWeekData(data);
       } catch (error) {
         console.error("Gagal mengambil data mingguan", error);
       }
@@ -130,7 +135,7 @@ export function JadwalObat() {
         </div>
 
           {/* Blok Daftar Obat */}
-          <JadwalHari data={dailyData} />
+          <JadwalHari data={weekData} />
         </>
       ) :
         // Blok Jadwal Harian

@@ -11,7 +11,7 @@ export function useDashboard() {
       setLoading(true);
   
       const data = await getDashboard();
-  
+
       setDashboard(data);
     } catch (err) {
       setError(err);
