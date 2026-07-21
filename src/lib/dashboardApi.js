@@ -9,6 +9,9 @@ export async function getDashboard() {
 
   const data = await response.json();
 
+  console.log(data)
+  console.log(getStatistics(data))
+
   return {
     statistics: getStatistics(data),
     weekly_adherence: [],
